@@ -30,7 +30,7 @@
         "source": "https://github.com/anomalylabs/search-module"
     },
     "require": {
-        "anomaly/streams-platform": "^1.6"
+        "anomaly/streams-platform": "^2.0"
     },
     "autoload": {
         "psr-4": {
