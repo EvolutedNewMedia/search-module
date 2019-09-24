@@ -38,5 +38,4 @@ class SearchModule extends Module
             ],
         ],
     ];
-
 }

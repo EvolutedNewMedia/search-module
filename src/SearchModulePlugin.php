@@ -41,7 +41,6 @@ class SearchModulePlugin extends Plugin
 
                     $query->where(
                         function (\Illuminate\Database\Eloquent\Builder $query) use ($search, $options) {
-
                             $threshold = array_get($options, 'threshold', 3);
 
                             /**
@@ -94,7 +93,6 @@ class SearchModulePlugin extends Plugin
                              */
                             if (count($words) > 1) {
                                 foreach ($words as $k => $word) {
-
                                     $match = app('db')->raw('MATCH (title,description) AGAINST ("' . $word . '")');
 
                                     //$query->addSelect($match . ' AS _score' . ($k + 1));

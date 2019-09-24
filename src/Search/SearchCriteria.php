@@ -45,5 +45,4 @@ class SearchCriteria extends EntryCriteria
 
         return $this;
     }
-
 }

@@ -78,6 +78,56 @@ class SearchEngine extends Engine
     }
 
     /**
+     * Index the model.
+     *
+     * @param EntryModel $model
+     */
+    protected function index(EntryModel $model, $locale = null)
+    {
+        $locale = $locale ?: config('app.fallback_locale');
+
+        /* @var EntryModel $model */
+        $array = $model->toSearchableArray();
+
+        /**
+         * If the model is translatable
+         * then translate it and use
+         * that array data to index.
+         *
+         * @var EntryTranslationsModel|EntryModel $translation
+         */
+        if ($model->isTranslatable() && $translation = $model->translateOrDefault($locale)) {
+            $array = array_merge($array, $translation->toArray());
+        }
+
+
+        if (!$item = $this->items->findByEntryAndLocale($model, $locale)) {
+            $item = new ItemModel(
+                [
+                    'entry'  => $model,
+                    'stream' => $model->getStream(),
+                ]
+            );
+        }
+
+        $item->fill(
+            [
+                'title'       => array_get($array, 'title'),
+                'keywords'    => array_get($array, 'keywords'),
+                'description' => array_get($array, 'description'),
+                'locale'      => $locale,
+                'searchable'  => $array,
+            ]
+        );
+
+        $this->items->withoutEvents(
+            function () use ($item) {
+                $this->items->save($item);
+            }
+        );
+    }
+
+    /**
      * Remove the given model from the index.
      *
      * @param  \Illuminate\Database\Eloquent\Collection $models
@@ -183,55 +233,4 @@ class SearchEngine extends Engine
             );
         }
     }
-
-    /**
-     * Index the model.
-     *
-     * @param EntryModel $model
-     */
-    protected function index(EntryModel $model, $locale = null)
-    {
-        $locale = $locale ?: config('app.fallback_locale');
-
-        /* @var EntryModel $model */
-        $array = $model->toSearchableArray();
-
-        /**
-         * If the model is translatable
-         * then translate it and use
-         * that array data to index.
-         *
-         * @var EntryTranslationsModel|EntryModel $translation
-         */
-        if ($model->isTranslatable() && $translation = $model->translateOrDefault($locale)) {
-            $array = array_merge($array, $translation->toArray());
-        }
-
-
-        if (!$item = $this->items->findByEntryAndLocale($model, $locale)) {
-            $item = new ItemModel(
-                [
-                    'entry'  => $model,
-                    'stream' => $model->getStream(),
-                ]
-            );
-        }
-
-        $item->fill(
-            [
-                'title'       => array_get($array, 'title'),
-                'keywords'    => array_get($array, 'keywords'),
-                'description' => array_get($array, 'description'),
-                'locale'      => $locale,
-                'searchable'  => $array,
-            ]
-        );
-
-        $this->items->withoutEvents(
-            function () use ($item) {
-                $this->items->save($item);
-            }
-        );
-    }
-
 }

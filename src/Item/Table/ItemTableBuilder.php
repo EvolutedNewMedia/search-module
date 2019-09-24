@@ -57,5 +57,4 @@ class ItemTableBuilder extends TableBuilder
      * @var array
      */
     protected $assets = [];
-
 }

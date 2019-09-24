@@ -62,5 +62,4 @@ class ItemFormBuilder extends FormBuilder
      * @var array
      */
     protected $assets = [];
-
 }
