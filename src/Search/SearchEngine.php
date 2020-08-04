@@ -213,9 +213,13 @@ class SearchEngine extends Engine
         if ($model->isTranslatable() && $translation = $model->translateOrDefault($locale)) {
             $array = array_merge(
                 $array,
-                array_filter($translation->toArray(), function ($item) {
-                    return !empty($item);
-                })
+                array_filter(
+                    $translation->toArray(),
+                    function ($item, $key) use ($array) {
+                        return !empty($item) && in_array($key, array_keys($array));
+                    },
+                    ARRAY_FILTER_USE_BOTH
+                )
             );
         }
 
